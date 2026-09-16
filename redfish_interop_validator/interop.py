@@ -368,7 +368,7 @@ def validateMinVersion(version, profile_entry):
     # If version doesn't contain version as is, try it as v#_#_#
     profile_entry_split = profile_entry.split('.')
     # get version from payload
-    if(re.match('#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*', version) is not None):
+    if(re.match(r'#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*', version) is not None):
         v_payload = getNamespace(version).split('.', 1)[-1]
         v_payload = v_payload.replace('v', '')
         if ('_' in v_payload):

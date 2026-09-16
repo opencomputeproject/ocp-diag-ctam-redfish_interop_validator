@@ -442,7 +442,7 @@ class ResourceObj:
             if key == '@odata.id':
                 paramPass = isinstance(decoded[key], str)
                 paramPass = re.match(
-                    '(\/.*)+(#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*)?', decoded[key]) is not None
+                    r'(\/.*)+(#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*)?', decoded[key]) is not None
                 if not paramPass:
                     my_logger.error("Payload Conformance Error: {} {}, Expected format is /path/to/uri, but received: {}".format(uri, key, decoded[key]))
                 else:
@@ -455,7 +455,7 @@ class ResourceObj:
             elif key == '@odata.context':
                 paramPass = isinstance(decoded[key], str)
                 paramPass = re.match(
-                    '/redfish/v1/\$metadata#([a-zA-Z0-9_.-]*\.)[a-zA-Z0-9_.-]*', decoded[key]) is not None
+                    r'/redfish/v1/\$metadata#([a-zA-Z0-9_.-]*\.)[a-zA-Z0-9_.-]*', decoded[key]) is not None
                 if not paramPass:
                     my_logger.warning("Payload Conformance Error: {} {}, Expected format is /redfish/v1/$metadata#ResourceType, but received: {}".format(uri, key, decoded[key]))
                     messages[key] = (decoded[key], 'odata',
@@ -465,7 +465,7 @@ class ResourceObj:
             elif key == '@odata.type':
                 paramPass = isinstance(decoded[key], str)
                 paramPass = re.match(
-                    '#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*', decoded[key]) is not None
+                    r'#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*', decoded[key]) is not None
                 if not paramPass:
                     my_logger.error("Payload Conformance Error: {} {}, Expected format is #Namespace.Type, but received: {}".format(uri, key, decoded[key]))
             else:

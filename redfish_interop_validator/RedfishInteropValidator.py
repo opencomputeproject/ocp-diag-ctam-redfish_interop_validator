@@ -311,6 +311,15 @@ def main(argslist=None, configfile=None):
     header = '| {:<{}} | {:>{}} |'.format('Result', col1_w, 'Count', col2_w)
     summary_lines = [
         '',
+        'Log Files:',
+        '',
+        '  Text report : {}'.format(text_log_file),
+        '',
+        '  HTML report : {}'.format(lastResultsPage),
+        '',
+    ]
+    summary_lines += [
+        '',
         'Results Summary:',
         '',
         sep,
@@ -327,15 +336,6 @@ def main(argslist=None, configfile=None):
         summary_lines.append('Validation has SUCCEEDED.')
         status_code = 0
 
-    summary_lines += [
-        '',
-        'Log Files:',
-        '',
-        '  Text report : {}'.format(text_log_file),
-        '',
-        '  HTML report : {}'.format(lastResultsPage),
-        '',
-    ]
 
     summary_text = '\n'.join(summary_lines)
     my_logger.info(summary_text)
