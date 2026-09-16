@@ -338,7 +338,7 @@ def main(argslist=None, configfile=None):
     ]
 
     summary_text = '\n'.join(summary_lines)
-    print(summary_text)
+    my_logger.info(summary_text)
 
     return status_code, lastResultsPage, 'Validation done'
 
