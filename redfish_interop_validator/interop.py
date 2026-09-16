@@ -758,9 +758,9 @@ def validateActionRequirement(profile_entry, rf_payload_tuple, actionname, passt
     return msgs
 
 
-URI_ID_REGEX = '\{[A-Za-z0-9]+\}'
+URI_ID_REGEX = r'\{[A-Za-z0-9]+\}'
 
-VALID_ID_REGEX = '[A-Za-z0-9.!#$&-;=?\[\]_~]+'
+VALID_ID_REGEX = r'[A-Za-z0-9.!#$&-;=?\[\]_~]+'
 
 
 def compareRedfishURI(expected_uris, uri):
