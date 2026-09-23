@@ -117,7 +117,8 @@ class rfService():
         target_version = 'n/a'
 
         # get Version
-        success, data, status, delay, _ = self.callResourceURI('/redfish/v1')
+        passthrough = "" if "passthrough" not in config else config["passthrough"] 
+        success, data, status, delay, resp = self.callResourceURI(passthrough+'/redfish/v1')
         if not success:
             my_logger.warning('Service Warning: Could not get ServiceRoot')
         else:
@@ -180,7 +181,8 @@ class rfService():
         ConfigIP, UseSSL, AuthType, ChkCert, ChkCertBundle, timeout, Token = config['configuri'], config['usessl'], config['authtype'], \
                 config['certificatecheck'], config['certificatebundle'], config['timeout'], config['token']
         # CacheMode, CacheDir = config['cachemode'], config['cachefilepath']
-
+        if "passthrough" in config:
+            URILink_passthrough = config["passthrough"] + URILink
         scheme, netloc, path, params, query, fragment = urlparse(URILink)
         inService = scheme == '' and netloc == ''
         if inService:
@@ -204,8 +206,8 @@ class rfService():
 
         # determine if we need to Auth...
         if inService:
-            noauthchk = URILink in ['/redfish', '/redfish/v1', '/redfish/v1/odata'] or\
-                '/redfish/v1/$metadata' in URILink
+            noauthchk = (URILink in ['/redfish', '/redfish/v1', '/redfish/v1/odata'] or\
+                '/redfish/v1/$metadata' in URILink) and not (config.get('username', None) or config.get('password', None))
 
             auth = None if noauthchk else (config.get('username'), config.get('password'))
             my_logger.debug('dont chkauth' if noauthchk else 'chkauth')
@@ -440,7 +442,7 @@ class ResourceObj:
             if key == '@odata.id':
                 paramPass = isinstance(decoded[key], str)
                 paramPass = re.match(
-                    '(\/.*)+(#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*)?', decoded[key]) is not None
+                    r'(\/.*)+(#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*)?', decoded[key]) is not None
                 if not paramPass:
                     my_logger.error("Payload Conformance Error: {} {}, Expected format is /path/to/uri, but received: {}".format(uri, key, decoded[key]))
                 else:
@@ -453,7 +455,7 @@ class ResourceObj:
             elif key == '@odata.context':
                 paramPass = isinstance(decoded[key], str)
                 paramPass = re.match(
-                    '/redfish/v1/\$metadata#([a-zA-Z0-9_.-]*\.)[a-zA-Z0-9_.-]*', decoded[key]) is not None
+                    r'/redfish/v1/\$metadata#([a-zA-Z0-9_.-]*\.)[a-zA-Z0-9_.-]*', decoded[key]) is not None
                 if not paramPass:
                     my_logger.warning("Payload Conformance Error: {} {}, Expected format is /redfish/v1/$metadata#ResourceType, but received: {}".format(uri, key, decoded[key]))
                     messages[key] = (decoded[key], 'odata',
@@ -463,7 +465,7 @@ class ResourceObj:
             elif key == '@odata.type':
                 paramPass = isinstance(decoded[key], str)
                 paramPass = re.match(
-                    '#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*', decoded[key]) is not None
+                    r'#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*', decoded[key]) is not None
                 if not paramPass:
                     my_logger.error("Payload Conformance Error: {} {}, Expected format is #Namespace.Type, but received: {}".format(uri, key, decoded[key]))
             else:

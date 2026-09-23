@@ -368,7 +368,7 @@ def validateMinVersion(version, profile_entry):
     # If version doesn't contain version as is, try it as v#_#_#
     profile_entry_split = profile_entry.split('.')
     # get version from payload
-    if(re.match('#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*', version) is not None):
+    if(re.match(r'#([a-zA-Z0-9_.-]*\.)+[a-zA-Z0-9_.-]*', version) is not None):
         v_payload = getNamespace(version).split('.', 1)[-1]
         v_payload = v_payload.replace('v', '')
         if ('_' in v_payload):
@@ -497,7 +497,7 @@ def find_key_in_payload(path_to_key, redfish_parent_payload):
     return key_exists
 
 
-def validatePropertyRequirement(propResourceObj, profile_entry, rf_payload_tuple, item_name):
+def validatePropertyRequirement(propResourceObj, profile_entry, rf_payload_tuple, item_name, parent_item_name="", passthrough=""):
     """
     Validate PropertyRequirements
     """
@@ -639,7 +639,7 @@ def validatePropertyRequirement(propResourceObj, profile_entry, rf_payload_tuple
     return msgs
 
 
-def validateActionRequirement(profile_entry, rf_payload_tuple, actionname):
+def validateActionRequirement(profile_entry, rf_payload_tuple, actionname, passthrough=""):
     """
     Validate Requirements for one action
     """
@@ -665,7 +665,7 @@ def validateActionRequirement(profile_entry, rf_payload_tuple, actionname):
 
     if "@Redfish.ActionInfo" in rf_payload_item:
         vallink = rf_payload_item['@Redfish.ActionInfo']
-        success, rf_payload_action, code, elapsed, _ = callResourceURI(vallink)
+        success, rf_payload_action, code, elapsed, _ = callResourceURI(get_valid_passthrough(passthrough, vallink) + vallink)
         if not success:
             rf_payload_action = None
 
@@ -758,9 +758,9 @@ def validateActionRequirement(profile_entry, rf_payload_tuple, actionname):
     return msgs
 
 
-URI_ID_REGEX = '\{[A-Za-z0-9]+\}'
+URI_ID_REGEX = r'\{[A-Za-z0-9]+\}'
 
-VALID_ID_REGEX = '[A-Za-z0-9.!#$&-;=?\[\]_~]+'
+VALID_ID_REGEX = r'[A-Za-z0-9.!#$&-;=?\[\]_~]+'
 
 
 def compareRedfishURI(expected_uris, uri):
@@ -794,7 +794,7 @@ entry_type_table = {
 }
 
 
-def validateInteropResource(propResourceObj, interop_profile, rf_payload):
+def validateInteropResource(propResourceObj, interop_profile, rf_payload, passthrough=""):
     """
     Base function that validates a single Interop Resource by its profile_entry
     """
@@ -921,3 +921,9 @@ def validateInteropResource(propResourceObj, interop_profile, rf_payload):
         my_logger.info('Skipping UpdateResource')
 
     return msgs
+def get_valid_passthrough(passthrough, uri):
+    search_passthrough = uri.find(passthrough, 0)
+    if search_passthrough != -1:
+        if uri[0:len(passthrough)] == passthrough:
+            return ""
+    return passthrough
