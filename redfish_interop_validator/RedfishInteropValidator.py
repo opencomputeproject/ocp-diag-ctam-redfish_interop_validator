@@ -71,6 +71,8 @@ def main(argslist=None, configfile=None):
     logger.set_standard_out(logger.Level.INFO - args.verbose if args.verbose < 3 else logger.Level.DEBUG)
 
     logpath = args.logdir
+    dt = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
+    logpath = os.path.join(args.logdir, "{}_{}".format("RedfishInteropValidator", dt))
 
     if not os.path.isdir(logpath):
         os.makedirs(logpath)
