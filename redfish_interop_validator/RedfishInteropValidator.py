@@ -44,7 +44,7 @@ def main(argslist=None, configfile=None):
     argget.add_argument('--token', type=str, help='bearer token for authtype Token')
 
     # validator options
-    argget.add_argument('--payload', type=str, help='mode to validate payloads [Tree, Single, SingleFile, TreeFile] followed by resource/filepath', nargs=2)
+    argget.add_argument('--payload', type=str, help='mode to validate payloads [Tree, NodeTree, Single, SingleFile, TreeFile] followed by resource/filepath', nargs=2)
     argget.add_argument('--logdir', type=str, default='./logs', help='directory for log files')
     argget.add_argument('--nooemcheck', action='store_false', dest='oemcheck', help='Don\'t check OEM items')
     argget.add_argument('--debugging', action="store_true", help='Output debug statements to text log, otherwise it only uses INFO')
@@ -181,7 +181,7 @@ def main(argslist=None, configfile=None):
         pmode, ppath = 'Default', ''
     pmode = pmode.lower()
 
-    if pmode not in ['tree', 'single', 'singlefile', 'treefile', 'default']:
+    if pmode not in ['tree', 'single', 'singlefile', 'treefile', 'default', 'nodetree']:
         pmode = 'Default'
         my_logger.warning('Configuration Warning: PayloadMode or path invalid, using Default behavior')
     if 'file' in pmode:
@@ -227,7 +227,7 @@ def main(argslist=None, configfile=None):
                 if 'single' in pmode:
                     success, new_results, _, _ = validateSingleURI(ppath, profile_to_process, 'Target', expectedJson=jsonData, pass_through=pass_through)
                 elif 'nodetree' in pmode:
-                    success, new_results, _, _ = validateURINodeTree(ppath, profile, 'Target', expectedJson=jsonData, pass_through=pass_through)
+                    success, new_results, _, _ = validateURINodeTree(ppath, profile_to_process, 'Target', expectedJson=jsonData, pass_through=pass_through)
                 elif 'tree' in pmode:
                     success, new_results, _, _ = validateURITree(ppath, profile_to_process, 'Target', expectedJson=jsonData, pass_through=pass_through)
                 else:
